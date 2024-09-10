@@ -19,8 +19,6 @@ class Camera_RPI:
 
 
 	# def __take_picture(self, stream='main'):
-		
-
 	# 	open camera
 	# 	cap = cv2.VideoCapture('/dev/video0', cv2.CAP_V4L)
 
