@@ -1,8 +1,23 @@
+from config import ARDUINO_PORT
+
+import time
 import serial
-import time 
-if __name__ == '__main__':
-    ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
+
+
+def send_message(message):
+    ser = serial.Serial(ARDUINO_PORT, 9600, timeout=1)
     ser.flush()
-    while True:
-        ser.write('Hello\n')
-        time.sleep(1)
+
+    ser.write(f'{message}\n')
+
+    ser.end()
+
+
+def receive_message():
+    ser = serial.Serial(ARDUINO_PORT, 9600, timeout=1)
+
+    message = ser.readline().decode('utf-8').rstrip()
+
+    ser.end()
+
+    return message
