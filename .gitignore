@@ -1,5 +1,7 @@
 .vscode/
 .venv/
 .DS_Sßtore/
+__pycache__/
+
 kafka/
 lego/

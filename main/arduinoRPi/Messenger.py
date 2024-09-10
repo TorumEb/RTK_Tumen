@@ -4,20 +4,15 @@ import time
 import serial
 
 
-def send_message(message):
-    ser = serial.Serial(ARDUINO_PORT, 9600, timeout=1)
+def send_message(ser, message):
     ser.flush()
 
-    ser.write(f'{message}\n')
+    message = str(message) + '\n'
+    message = message.encode()
+    ser.write(message)
 
-    ser.end()
 
-
-def receive_message():
-    ser = serial.Serial(ARDUINO_PORT, 9600, timeout=1)
-
-    message = ser.readline().decode('utf-8').rstrip()
-
-    ser.end()
+def receive_message(ser):
+    message = ser.readline().decode().rstrip()
 
     return message
