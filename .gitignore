@@ -1,0 +1,14 @@
+.venv/
+.vscode/
+
+librealsense-master/
+
+dataset*/
+roboflow*/
+
+*.png
+*.jpg
+*.jpeg
+*.txt
+
+*.pt
