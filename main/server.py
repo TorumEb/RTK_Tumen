@@ -4,6 +4,7 @@ import socket, pickle
 import json
 import numpy as np
 from cameraRuspberry.cameraRPI import Camera_RPI
+import arduinoRPi.Messenger as messanger
 # Задаем адрес сервера
 
 
@@ -32,10 +33,14 @@ def main():
     print('server is running, please, press ctrl+c to stop')
     connection, address = server_socket.accept()
     print("new connection from {address}".format(address=address))
-    
+    camera = Camera_RPI()
+
     while True:
         data = GetMessageFromClient(connection)
-        print(data)
+        error = camera.countError()
+        messanger.send_message(error)
+
+        print(error)
 
 
 if __name__ == "__main__":

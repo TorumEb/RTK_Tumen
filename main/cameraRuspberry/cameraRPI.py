@@ -60,8 +60,6 @@ class Camera_RPI:
 		_, thresh = cv2.threshold(croped_gray, 70, 255, cv2.THRESH_BINARY_INV)
 		
 		C = cv2.moments(thresh,1)
-		cv2.imshow("23",thresh)
-		cv2.waitKey(1)
 		if C['m00'] > 1:
 			x = int(C['m10'] / C['m00'])
 			y = int(C['m01']/ C['m00'])
@@ -71,11 +69,3 @@ class Camera_RPI:
 		
 		
 		return 0
-
-def main():
-	camera = Camera_RPI()
-	while True:
-		print(camera.countError())
-
-if __name__ == "__main__":
-	main()
