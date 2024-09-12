@@ -7,7 +7,6 @@ import serial
 
 def send_message(ser, val1, val2):
     data = struct.pack("<hh", val1, val2) + b'\n'
-    print(data, len(data))
 
     ser.write(data)
 

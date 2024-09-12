@@ -51,14 +51,18 @@ class Camera_RPI:
 
 
 	def countError(self):
-		
 		img = self.__take_picture() 
+
+		cv2.imwrite('img.png', img)
+
 		gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-		up_line = 400
-		down_line = 420
+		up_line = 200
+		down_line = 220
 		croped_gray = gray[:][up_line:down_line]
-		_, thresh = cv2.threshold(croped_gray, 70, 255, cv2.THRESH_BINARY_INV)
-		
+		_, thresh = cv2.threshold(croped_gray, 140, 255, cv2.THRESH_BINARY_INV)
+
+		cv2.imwrite('thresh.png', thresh)
+
 		C = cv2.moments(thresh,1)
 		if C['m00'] > 1:
 			x = int(C['m10'] / C['m00'])
@@ -66,6 +70,5 @@ class Camera_RPI:
 			cv2.circle(croped_gray, (x, y), 10, (255,255,255), -1)
 			error = croped_gray.shape[1] // 2 - x 
 			return error
-		
-		
+
 		return 0

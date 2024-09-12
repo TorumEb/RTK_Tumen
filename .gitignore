@@ -1,7 +1,11 @@
 .vscode/
 .venv/
-.DS_Sßtore/
+.DS_Store/
 __pycache__/
 
 kafka/
 lego/
+
+*.swp
+
+*.png
