@@ -1,15 +1,15 @@
 from config import ARDUINO_PORT
 
+import struct
 import time
 import serial
 
 
-def send_message(ser, message):
-    ser.flush()
+def send_message(ser, val1, val2):
+    data = struct.pack("<hh", val1, val2) + b'\n'
+    print(data, len(data))
 
-    message = str(message) + '\n'
-    message = message.encode()
-    ser.write(message)
+    ser.write(data)
 
 
 def receive_message(ser):
