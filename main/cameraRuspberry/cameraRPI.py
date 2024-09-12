@@ -17,23 +17,10 @@ class Camera_RPI:
 
 		self.camera.start()
 
+		self.thresh_range = 70, 255
+	
 
-	# def __take_picture(self, stream='main'):
-	# 	open camera
-	# 	cap = cv2.VideoCapture('/dev/video0', cv2.CAP_V4L)
-
-	# 	set dimensions
-	# 	cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
-	# 	cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
-
-	# 	take frame
-	# 	ret, frame = cap.read()
-	# 	write frame to file
-		
-
-	# 	return frame
-
-	def __take_picture(self, stream='main'):
+	def take_picture(self, stream='main'):
 		# Takes picture of specified stream
 		# 
 		# Input arguments:
@@ -49,26 +36,39 @@ class Camera_RPI:
 		return image
 
 
+	def countError(self, image):
+		gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-	def countError(self):
-		img = self.__take_picture() 
-
-		cv2.imwrite('img.png', img)
-
-		gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-		up_line = 200
-		down_line = 220
+		up_line, down_line = 400, 420
 		croped_gray = gray[:][up_line:down_line]
-		_, thresh = cv2.threshold(croped_gray, 140, 255, cv2.THRESH_BINARY_INV)
 
-		cv2.imwrite('thresh.png', thresh)
+		thresh = self.__apply_thresh(croped_gray)
 
-		C = cv2.moments(thresh,1)
+		C = cv2.moments(thresh, 1)
 		if C['m00'] > 1:
 			x = int(C['m10'] / C['m00'])
-			y = int(C['m01']/ C['m00'])
-			cv2.circle(croped_gray, (x, y), 10, (255,255,255), -1)
+
 			error = croped_gray.shape[1] // 2 - x 
+
 			return error
 
 		return 0
+
+
+	def detect_dead_end(self, image):
+		side_width = 30
+		left_side = image[:, 0:side_width]
+		right_side = image[:, image.shape[1] - side_width:image.shape[1]]
+
+		left_side = self.__apply_thresh(left_side)
+		right_side = self.__apply_thresh(right_side)
+
+		if np.any(left_side) and np.any(right_side):
+			return True
+		return False
+
+
+	def __apply_thresh(self, image):
+		_, thresh = cv2.threshold(image, *self.thresh_range, cv2.THRESH_BINARY_INV)
+
+		return thresh
