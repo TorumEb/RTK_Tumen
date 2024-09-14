@@ -6,6 +6,36 @@ import pyrealsense2 as rs
 from ultralytics import YOLO
 
 
+class Realsense:
+    def __init__(self, frame_shape=(1920, 1080), fps=30):
+        self.fps = fps
+        self.frame_shape = frame_shape
+
+        self.camera = rs.pipeline()
+        __camera_config = self.camera.config()
+        __camera_config.enable_stream(rs.stream.color, *self.frame_shape, rs.format.bgr8, self.fps)
+
+        self.camera.start()
+
+
+    def __del__(self):
+        self.camera.stop()
+
+
+    def take_pirture(self):
+        frame = self.camera.wait_for_frames()
+        frame = frame.get_color_frame()
+
+        image = np.asanyarray(frame)
+        image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+
+        return image
+    
+
+class ManometrDetector:
+    def __init__(self, )
+
+
 class RealsenseCamera:
     def __init__(self,
             model_detection_path, model_classification_path,
