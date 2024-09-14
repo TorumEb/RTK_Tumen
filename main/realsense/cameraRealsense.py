@@ -1,5 +1,3 @@
-from typing import List, Tuple, Dict
-
 import cv2 as cv
 import numpy as np
 import pyrealsense2 as rs
@@ -33,21 +31,9 @@ class Realsense:
     
 
 class ManometrDetector:
-    def __init__(self, )
-
-
-class RealsenseCamera:
-    def __init__(self,
-            model_detection_path, model_classification_path,
-            shape=(1920, 1080), fps=30,
-        ) -> None:
+    def __init__(self, model_detection_path, model_classification_path):
         self.model_detection = YOLO(model_detection_path)
         self.model_classification = YOLO(model_classification_path)
-
-        self.__camera = rs.pipeline()
-        __rs_config = rs.config()
-        __rs_config.enable_stream(rs.stream.any, *shape, rs.format.bgr8, fps)
-        self.__camera.start()
 
         # Green and Red keys correspond to class names for classification model
         # thus shouldn't be changed
@@ -127,19 +113,7 @@ class RealsenseCamera:
         return [*zip(corners, ids)]
 
 
-    def take_pirture(self):
-        frame = self.__camera.wait_for_frames()
-        data = frame.get_color_frame()
-        data = data.get_data()
-
-        image = np.asanyarray(data)
-        image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
-
-        return image
-
-
     def __display_prediction(self, prediction, image, aruco2manometr_centers, aruco2manometr_class):
-
         for aruco_id, man_idx in aruco2manometr_centers.items():
             man_color = aruco2manometr_class[aruco_id]
             man_color = self.colors[man_color]
@@ -156,6 +130,7 @@ class RealsenseCamera:
 
         return image
 
+
     @staticmethod
     def __get_aruco_center(top_left, bottom_right):
         # Diagonal center between top left and bottom right corner of aruco marker
@@ -164,6 +139,7 @@ class RealsenseCamera:
         center_y = int((top_left[1] + bottom_right[1]) / 2.0)
 
         return [center_x, center_y]
+
 
     @staticmethod
     def __get_manometrs_center(prediction):
@@ -177,9 +153,9 @@ class RealsenseCamera:
 
         return centers
 
+
     @staticmethod
     def __closest_aruco(manometr_centers, arucos):
-
         # Computes distances between centers of every
         # manometr and aruco marker, then gives closest
         # aruco for every manometr
@@ -206,6 +182,7 @@ class RealsenseCamera:
         }
 
         return aruco2manometr_map
+
 
     @staticmethod
     def __crop_manometr(image, box):
