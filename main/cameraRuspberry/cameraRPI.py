@@ -17,7 +17,7 @@ class Camera_RPI:
 
 		self.camera.start()
 
-		self.thresh_range = 140, 255
+		self.thresh_range = 100, 255
 	
 
 	def take_picture(self, stream='main'):
@@ -39,12 +39,15 @@ class Camera_RPI:
 	def countError(self, image):
 		gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
+		cv2.imwrite('test_thresh.png', self.__apply_thresh(gray))
+		#cv2.imwrite('test_adaptive_thresh.png', self.adaptive_thresh(gray))
+
 		up_line, down_line = 200, 220
 		croped_gray = gray[:][up_line:down_line]
 
 		thresh = self.__apply_thresh(croped_gray)
-		cv2.imwrite("test_thresh.png", thresh)
 		C = cv2.moments(thresh, 1)
+
 		if C['m00'] > 1:
 			x = int(C['m10'] / C['m00'])
 

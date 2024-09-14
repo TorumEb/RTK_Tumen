@@ -2,7 +2,7 @@ import config
 
 import time
 from math import copysign
-
+import cv2
 import socket, pickle
 import json
 import numpy as np
@@ -28,12 +28,13 @@ def GetMessageFromClient(connection):
         return data
     return None
 
-START_SPEED = 150
+
+
 def main():
     error1, error, ierror, h = 0, 0, 0, 0.05
-    
+    START_SPEED = 170
     left_motor = 0
-    right_motor = 0 
+    right_motor = 0     
     # server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # server_socket.bind(config.SERVER_ADDRESS)
     # server_socket.listen(1)
@@ -45,64 +46,90 @@ def main():
     ser.reset_input_buffer()
     ser.flush()
     
-    turn_around(camera, ser)
+    #turn_around(camera, ser)
 
     try:
         while True:
-                #data = GetMessageFromClient(connection)
-                tic = time.time()
-
-                error1 = error
-
-                frame = camera.take_picture()
-                error = camera.countError(frame)
-                detect_turns = camera.detect_turn_end(frame)
-                
-                #if error == 0: turn_around(camera, ser)
-
-                # if detect_turns[0] != 0 and detect_turns[1] != 0:
-                #     turn_around(camera, ser)
-                #     messanger.send_message(ser, 0, 0)
-                #     print(detect_turns)
-                #     return
-
-                if detect_turns[1] == 1:
-                    turn_sides(1, camera, ser)
-                
+            frame = PID(camera, ser, error1, error, ierror, h, START_SPEED, left_motor, right_motor)
+            detect = camera.detect_turn_end(frame)
+            if detect[0] == 1:
+                while detect[0] == 1:
+                    detect = camera.detect_turn_end(frame)
+                    frame = PID(camera, ser, error1, error, ierror, h, START_SPEED, left_motor, right_motor)
                     
-
-                # if -10 < error < 10:
-                #     error = copysign(10, error)
-                
-
-                derror = (error - error1) / h
-                ierror += (error1 + error) * (h / 2)
-
-                w = 0.3 * error + 0.025 * derror + 0 * ierror
-                left_motor = max(0, min(START_SPEED + w, 220))
-                right_motor = max(0, min(START_SPEED - w, 220))
-
-                messanger.send_message(ser, int(right_motor), int(left_motor))
-                
-
-                toc = time.time()
-                dtime = h - (toc - tic)
-                if dtime > 0:
-                   time.sleep(dtime)
+                turn_side(1, camera, ser, START_SPEED)
     except KeyboardInterrupt:
         messanger.send_message(ser, 0, 0)
 
 
-def turn_sides(side, camera, ser):
+
+def PID(camera, ser, error1, error, ierror, h, START_SPEED, left_motor, right_motor):
+    #data = GetMessageFromClient(connection)
+    tic = time.time()
+
+    error1 = error
+
     frame = camera.take_picture()
-    #frame = frame[:, 100 : frame.shape[1] - 100]
-    #error = camera.countError(frame)
-    detect_turns = camera.detect_turn_end(frame)
-    while detect_turns[side] != 0:
-        #print("go side", side, detect_turns)
-        frame = camera.take_picture()
-        detect_turns = camera.detect_turn_end(frame)
-        messanger.send_message(ser, side * START_SPEED, (1 - side) * START_SPEED)
+    error = camera.countError(frame)
+   
+    
+    derror = (error - error1) / h
+    ierror += (error1 + error) * (h / 2)
+
+    w = 0.3 * error + 0.025 * derror + 0 * ierror
+    left_motor = max(0, min(START_SPEED + w, 220))
+    right_motor = max(0, min(START_SPEED - w, 220))
+
+    messanger.send_message(ser, int(right_motor), int(left_motor))
+
+    toc = time.time()
+    dtime = h - (toc - tic)
+    if dtime > 0:
+        time.sleep(dtime)
+    return frame
+
+def turn_side(side, camera, ser, START_SPEED):
+    # 1 - left
+    frame = camera.take_picture()
+    frame = frame[400:800, 0 : 100]
+    _, frame = cv2.threshold(frame, *camera.thresh_range, cv2.THRESH_BINARY_INV)
+    sum_white = np.sum(frame) // 255
+    print(sum_white)
+    while(sum_white < 300):
+    
+        messanger.send_message(ser, START_SPEED, -1)
+        time.sleep(0.05)
+
+    
+
+
+# def turn_sides(side, camera, ser):
+#     frame = camera.take_picture()
+
+#     size_frame = 100
+
+#     if side == 1: frame = frame[300:500, 0:size_frame ]
+#     if side == 0: frame = frame[300:500, frame.shape[1]-size_frame : frame.shape[1]]
+
+#     thresh = camera.__apply_thresh(frame)
+#     count_white_point = np.sum(thresh) / 255
+
+#     while count_white_point > 0:
+#         frame = camera.take_picture()
+#         size_frame = 100
+
+#         if side == 1: frame = frame[300:500, 0:size_frame ]
+#         if side == 0: frame = frame[300:500, frame.shape[1]-size_frame : frame.shape[1]]
+
+#         thresh = camera.__apply_thresh(frame)
+#         count_white_point = np.sum(thresh) / 255
+#         cv2.imwrite('turn_sides_thresh.png')
+#         messanger.send_message(ser, (1 - side) * START_SPEED, side * START_SPEED)
+
+#         time.sleep(0.02)
+
+#     messanger.send_message(ser, 0, 0)
+
 
 
 
