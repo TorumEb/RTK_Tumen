@@ -11,7 +11,7 @@ def main():
         if cv.waitKey(1) == ord('q'):
             break
 
-    video.release
+    video.release()
 
 
 if __name__ == '__main__':

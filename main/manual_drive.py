@@ -37,8 +37,6 @@ def main():
     while True:
         frame = rpi_camera.take_picture()
 
-        video.write(frame)
-
         key_pressed = get_pressed_key(keyboard_settings).lower()
         if key_pressed in key_bindings:
             arduino.send_message(arduino_serial, *key_bindings[key_pressed])
@@ -46,7 +44,6 @@ def main():
             break
 
     arduino.send_message(arduino_serial, 0, 0)
-    video.release()
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ import time
 class PID:
     def __init__(self,
         k_p=0.3, k_d=0.025, k_i=0, delta=0.05,
-        base_speed=170, min_speed=0, max_speed=220
+        base_speed=180, min_speed=0, max_speed=250
     ):
         self.base_speed = base_speed
         self.min_speed, self.max_speed = min_speed, max_speed
