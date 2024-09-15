@@ -4,7 +4,13 @@ import cv2 as cv
 
 
 def main():
-    ...
+    while True:
+        frame = rpi_camera.take_picture()
+
+        video.write(frame)
+
+        if cv.waitKey(30) == ord('q'):
+            break
 
 
 if __name__ == '__main__':
@@ -14,3 +20,4 @@ if __name__ == '__main__':
     video = cv.VideoWriter('output.avi', fourcc, 20., (800, 600))
 
     main()
+    video.release()

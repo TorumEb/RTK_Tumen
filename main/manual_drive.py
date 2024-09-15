@@ -7,6 +7,7 @@ import tty
 import termios
 from select import select
 import serial
+import time
 
 import cv2 as cv
 
@@ -32,13 +33,9 @@ def main():
     arduino_serial.reset_input_buffer()
     arduino_serial.flush()
 
-    fourcc = cv.VideoWriter_fourcc(*'XVID')
-    video = cv.VideoWriter('output.avi', fourcc, 20.0, (800,  600))
 
     while True:
         frame = rpi_camera.take_picture()
-
-        video.write(frame)
 
         key_pressed = get_pressed_key(keyboard_settings).lower()
         if key_pressed in key_bindings:
@@ -46,18 +43,19 @@ def main():
         elif key_pressed == 'q':
             break
 
-    video.release()
+    arduino.send_message(arduino_serial, 0, 0)
 
 
 if __name__ == '__main__':
-    robot_speed = 200
+    linear_speed = 250
+    rotation_speed = 140
 
-    # first right motor, then left
+    # first left motor, then right
     key_bindings = {
-        'w': ( robot_speed,  robot_speed),
-        'a': ( robot_speed, -robot_speed),
-        'd': (-robot_speed,  robot_speed),
-        's': (-robot_speed, -robot_speed),
+        'w': ( linear_speed,  linear_speed),
+        's': (-linear_speed, -linear_speed),
+        'a': (-rotation_speed,  rotation_speed),
+        'd': ( rotation_speed, -rotation_speed),
         '': (0, 0)
     }
 

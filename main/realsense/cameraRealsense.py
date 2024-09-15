@@ -5,7 +5,7 @@ from ultralytics import YOLO
 
 
 class Realsense:
-    def __init__(self, frame_shape=(1920, 1080), fps=30):
+    def __init__(self, frame_shape=(1920, 1080), fps=8):
         self.fps = fps
         self.frame_shape = frame_shape
 
@@ -13,7 +13,7 @@ class Realsense:
         __camera_config = self.camera.config()
         __camera_config.enable_stream(rs.stream.color, *self.frame_shape, rs.format.bgr8, self.fps)
 
-        self.camera.start()
+        self.camera.start(__camera_config)
 
 
     def __del__(self):
