@@ -29,12 +29,11 @@ def GetMessageFromClient(connection):
     return None
 
 
-
 def main():
     error1, error, ierror, h = 0, 0, 0, 0.05
     START_SPEED = 170
     left_motor = 0
-    right_motor = 0     
+    right_motor = 0   
     # server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # server_socket.bind(config.SERVER_ADDRESS)
     # server_socket.listen(1)
@@ -62,7 +61,6 @@ def main():
         messanger.send_message(ser, 0, 0)
 
 
-
 def PID(camera, ser, error1, error, ierror, h, START_SPEED, left_motor, right_motor):
     #data = GetMessageFromClient(connection)
     tic = time.time()
@@ -71,8 +69,7 @@ def PID(camera, ser, error1, error, ierror, h, START_SPEED, left_motor, right_mo
 
     frame = camera.take_picture()
     error = camera.countError(frame)
-   
-    
+
     derror = (error - error1) / h
     ierror += (error1 + error) * (h / 2)
 
@@ -86,56 +83,34 @@ def PID(camera, ser, error1, error, ierror, h, START_SPEED, left_motor, right_mo
     dtime = h - (toc - tic)
     if dtime > 0:
         time.sleep(dtime)
+
     return frame
 
+
 def turn_side(side, camera, ser, START_SPEED):
-    # 1 - left
-    frame = camera.take_picture()
-    frame = frame[400:800, 0 : 100]
-    _, frame = cv2.threshold(frame, *camera.thresh_range, cv2.THRESH_BINARY_INV)
-    sum_white = np.sum(frame) // 255
-    print(sum_white)
-    while(sum_white < 300):
-    
-        messanger.send_message(ser, START_SPEED, -1)
-        time.sleep(0.05)
-
-    
+    tic = time.time()
+    toc = time.time()
+    while toc - tic != 3:
+        messanger.send_message(ser, side * START_SPEED, (1 - side) * START_SPEED)
+        time.slee(0.05)
 
 
-# def turn_sides(side, camera, ser):
+# def turn_side(side, camera, ser, START_SPEED):
+#     # 1 - left
 #     frame = camera.take_picture()
-
-#     size_frame = 100
-
-#     if side == 1: frame = frame[300:500, 0:size_frame ]
-#     if side == 0: frame = frame[300:500, frame.shape[1]-size_frame : frame.shape[1]]
-
-#     thresh = camera.__apply_thresh(frame)
-#     count_white_point = np.sum(thresh) / 255
-
-#     while count_white_point > 0:
-#         frame = camera.take_picture()
-#         size_frame = 100
-
-#         if side == 1: frame = frame[300:500, 0:size_frame ]
-#         if side == 0: frame = frame[300:500, frame.shape[1]-size_frame : frame.shape[1]]
-
-#         thresh = camera.__apply_thresh(frame)
-#         count_white_point = np.sum(thresh) / 255
-#         cv2.imwrite('turn_sides_thresh.png')
-#         messanger.send_message(ser, (1 - side) * START_SPEED, side * START_SPEED)
-
-#         time.sleep(0.02)
-
-#     messanger.send_message(ser, 0, 0)
-
-
+#     frame = frame[400:800, 0 : 100]
+#     _, frame = cv2.threshold(frame, *camera.thresh_range, cv2.THRESH_BINARY_INV)
+#     sum_white = np.sum(frame) // 255
+#     print(sum_white)
+#     while(sum_white < 300):
+    
+#         messanger.send_message(ser, START_SPEED, -1)
+#         time.sleep(0.05)
 
 
 def turn_around(camera, ser):
     frame = camera.take_picture()
-    frame = frame[:, 100 : frame.shape[1] - 100]
+    frame = frame[:, 100:frame.shape[1] - 100]
     error = camera.countError(frame)
 
     start_sign = np.sign(error)
