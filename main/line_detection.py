@@ -17,7 +17,7 @@ def count_error(image, *, up_line=550, down_line=580):
     return 0
 
 #500 540
-def detect_turn_end(image, *, up_line=400, down_line=540):
+def detect_turn_end(image, *, up_line=500, down_line=540):
     crop_image_left = image[up_line:down_line, 0:image.shape[1] // 2]
     crop_image_right = image[up_line:down_line, image.shape[1] // 2 : image.shape[1]]
 
