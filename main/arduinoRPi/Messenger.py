@@ -1,8 +1,4 @@
-from config import ARDUINO_PORT
-
 import struct
-import time
-import serial
 
 
 def send_message(ser, val1, val2):

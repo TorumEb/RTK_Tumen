@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 
-#550 580
+
 def count_error(image, *, up_line=550, down_line=580):
     croped_image = image[:][up_line:down_line]
 
@@ -16,8 +16,10 @@ def count_error(image, *, up_line=550, down_line=580):
 
     return 0
 
-#500 540
+
 def detect_turn_end(image, *, up_line=400, down_line=540):
+    # Returns list of two elements, where 
+
     crop_image_left = image[up_line:down_line, 0:image.shape[1] // 2]
     crop_image_right = image[up_line:down_line, image.shape[1] // 2 : image.shape[1]]
 
@@ -25,9 +27,9 @@ def detect_turn_end(image, *, up_line=400, down_line=540):
     amount_right = np.sum(crop_image_right) / 255
 
     procent_size_image = (down_line - up_line) * (image.shape[1] // 2)
-    procent_size_image = procent_size_image * 0.9
+    procent_size_image = procent_size_image * 0.8
 
-    ans = [ 
+    ans = [
         int(amount_left  >= procent_size_image),
         int(amount_right >= procent_size_image)
     ]
@@ -38,7 +40,5 @@ def detect_turn_end(image, *, up_line=400, down_line=540):
 def apply_thresh(image, thresh_range=(120, 255)):
     image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     _, thresh = cv.threshold(image, *thresh_range, cv.THRESH_BINARY_INV)
-
-    cv.imwrite('test_image.png', thresh)
 
     return thresh

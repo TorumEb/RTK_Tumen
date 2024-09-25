@@ -20,4 +20,5 @@ if __name__ == '__main__':
     video = cv.VideoWriter('output.avi', fourcc, 20., (800, 600))
 
     main()
+
     video.release()

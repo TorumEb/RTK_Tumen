@@ -1,10 +1,10 @@
-from cameraRealsense import RealsenseCamera
+from main.realsense.realsense_detection import Realsense
 
 import cv2 as cv
 
 def main():
     while True:
-        frame = realsense_camera.__takePicture()
+        frame = realsense_camera.take_pirture()
 
         video.write(frame)
 
@@ -15,7 +15,7 @@ def main():
 
 
 if __name__ == '__main__':
-    realsense_camera = RealsenseCamera()
+    realsense_camera = Realsense()
 
     fourcc = cv.VideoWriter_fourcc(*'XVID')
     video = cv.VideoWriter('output.avi', fourcc, realsense_camera.fps, realsense_camera.frame_shape)

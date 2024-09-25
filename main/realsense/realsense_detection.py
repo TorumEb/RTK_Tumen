@@ -1,7 +1,8 @@
-import cv2 as cv
-import numpy as np
 import pyrealsense2 as rs
 from ultralytics import YOLO
+
+import cv2 as cv
+import numpy as np
 
 
 class Realsense:
@@ -10,7 +11,7 @@ class Realsense:
         self.frame_shape = frame_shape
 
         self.camera = rs.pipeline()
-        __camera_config = self.camera.config()
+        __camera_config = rs.config()
         __camera_config.enable_stream(rs.stream.color, *self.frame_shape, rs.format.bgr8, self.fps)
 
         self.camera.start(__camera_config)
@@ -22,13 +23,12 @@ class Realsense:
 
     def take_pirture(self):
         frame = self.camera.wait_for_frames()
-        frame = frame.get_color_frame()
+        pic = frame.get_color_frame()
 
-        image = np.asanyarray(frame)
-        image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+        image = np.asanyarray(pic.get_data())
 
         return image
-    
+
 
 class ManometrDetector:
     def __init__(self, model_detection_path, model_classification_path):
@@ -42,6 +42,13 @@ class ManometrDetector:
             'Red': (0, 0, 255),
             'Blue': (255, 0, 0)
         }
+
+
+    def initialize_detection(self, init_image='init.png'):
+        init_image = cv.imread(init_image)
+
+        self.model_detection.predict(init_image, verbose=False)
+        self.model_classification.predict(init_image, verbose=False)
 
 
     def classify_manometr(self, image, manometr_box):
@@ -60,7 +67,6 @@ class ManometrDetector:
 
 
     def detection_pipeline(self, image, arucos, display=False):
-    
         prediction = self.model_detection.predict(image, conf=.75, verbose=False)[0]
 
         arucos_centers = {
@@ -93,11 +99,11 @@ class ManometrDetector:
     @staticmethod
     def find_aruco(image, aruco_type=cv.aruco.DICT_5X5_100):
         # Detects all ArUco markers in image
-        # 
+        #
         # Input pararms:
         # 	aruco_type (not required) - type of ArUco markers
         # 	debug (default: false) - if True also return corners of markers and taken image
-        # 
+        #
         # Returns just ids of detected markers if debug is diabled,
         # else image, corners and ids
         dictionary = cv.aruco.getPredefinedDictionary(aruco_type)

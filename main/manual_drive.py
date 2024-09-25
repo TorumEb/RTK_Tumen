@@ -1,15 +1,12 @@
 import config
 import arduinoRPi.Messenger as arduino
-from cameraRuspberry.cameraRPI import Camera_RPI
+from line_following import stop_robot
 
 import sys
 import tty
+import serial
 import termios
 from select import select
-import serial
-import time
-
-import cv2 as cv
 
 
 def get_pressed_key(settings, timeout=0.05):
@@ -25,26 +22,14 @@ def get_pressed_key(settings, timeout=0.05):
 
 
 def main():
-    keyboard_settings = termios.tcgetattr(sys.stdin)
-
-    rpi_camera = Camera_RPI()
-
-    arduino_serial = serial.Serial(config.ARDUINO_PORT, 115_200, timeout=1)
-    arduino_serial.reset_input_buffer()
-    arduino_serial.flush()
-
-
     while True:
-        frame = rpi_camera.take_picture()
-
         key_pressed = get_pressed_key(keyboard_settings).lower()
+
         if key_pressed in key_bindings:
             arduino.send_message(arduino_serial, *key_bindings[key_pressed])
+
         elif key_pressed == 'q':
             break
-
-    arduino.send_message(arduino_serial, 0, 0)
-
 
 if __name__ == '__main__':
     linear_speed = 250
@@ -59,4 +44,13 @@ if __name__ == '__main__':
         '': (0, 0)
     }
 
-    main()
+    keyboard_settings = termios.tcgetattr(sys.stdin)
+
+    arduino_serial = serial.Serial(config.ARDUINO_PORT, 115_200, timeout=1)
+    arduino_serial.reset_input_buffer()
+    arduino_serial.flush()
+
+    try:
+        main()
+    finally:
+        stop_robot(arduino_serial)

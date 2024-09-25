@@ -1,5 +1,5 @@
 import arduinoRPi.Messenger as arduino 
-from line_detection import count_error, apply_thresh
+from line_detection import count_error
 
 import time
 
