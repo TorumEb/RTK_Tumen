@@ -41,5 +41,6 @@ Rpi получала картинку с камеры, установленно�
 <center><img src="https://lh3.googleusercontent.com/pw/AP1GczPlXLgXgjCzBjwrTm8J58MyIXYLg-GMQxTlaJVKHPQLiqnyhO0Rypt4BPICgqzQtiaQ6q-P979YG7Pii787N96QLQhjlqi4UbKL2GJr2-BYm5fHvRR3gjdLfUnQDGVnYo-IcbTGjrHxph-Ajs7RE5lxuw=w1272-h955-s-no-gm?authuser=0" alt="Детекция" width="600"></center>
 
 # Итоговый результат
+Именно так ехал наш робот в оба соревновательных дня. На видео второй день, когда была необходима остановка перед препятствием в виде коровы
 
 https://photos.google.com/share/AF1QipNxDUFPkE6mtcySDR4RlRrKs4QvnTmyxVlsRhRBIRTYJkASvxFVUrrKfekKqdFs1w/photo/AF1QipMTtxPXI31fglgymunjmzoDHrBms8TRLFeSE0zz?key=S0kyLWtaNC1KQkJCV2dqOURCOGROSjJVY3BCYll3
